@@ -11,32 +11,33 @@ var (
 )
 
 type player struct {
-	id       int
-	assigned int
-	hasPuck  bool
+	id      int
+	hasPuck bool
 }
 
 func (thisPlayer *player) play() {
+	assigned := ((thisPlayer.id + 1) % len(players)) + 1
+	fmt.Println(strconv.Itoa(thisPlayer.id), "-", strconv.Itoa(assigned))
 	for {
-		//time.Sleep(90 * time.Millisecond)
+		time.Sleep(90 * time.Millisecond)
 
-		if players[thisPlayer.assigned].hasPuck {
-			players[thisPlayer.assigned].hasPuck = false
+		if players[assigned].hasPuck {
+			players[assigned].hasPuck = false
 			thisPlayer.hasPuck = true
-			fmt.Println(strconv.Itoa(thisPlayer.assigned), " passed to ", strconv.Itoa(thisPlayer.id))
+			fmt.Println(strconv.Itoa(assigned), " passed to ", strconv.Itoa(thisPlayer.id))
 		}
 	}
 }
 
 func main() {
-	players[1] = &player{id: 1, assigned: 3, hasPuck: true}
-	players[2] = &player{id: 2, assigned: 1}
-	players[3] = &player{id: 3, assigned: 2}
+	players[1] = &player{id: 1, hasPuck: true}
+	players[2] = &player{id: 2}
+	players[3] = &player{id: 3}
 
 	go players[1].play()
-	//time.Sleep(30 * time.Millisecond)
+	time.Sleep(30 * time.Millisecond)
 	go players[2].play()
-	//time.Sleep(30 * time.Millisecond)
+	time.Sleep(30 * time.Millisecond)
 	go players[3].play()
 
 	time.Sleep(5 * time.Second)
