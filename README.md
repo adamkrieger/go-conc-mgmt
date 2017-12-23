@@ -1,0 +1,3 @@
+- The holder of chan neither sends nor receives
+- The holder of <-chan receives only
+- The holder of chan<- sends only

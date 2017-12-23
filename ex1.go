@@ -2,43 +2,35 @@ package main
 
 import (
 	"fmt"
-	"strconv"
 	"time"
+
+	"github.com/adamkrieger/go-conc-mgmt/hockey"
 )
 
 var (
-	players = make(map[int]*player)
+	team *hockey.Team
 )
 
-type player struct {
-	id      int
-	hasPuck bool
-}
-
-func (thisPlayer *player) play() {
-	assigned := ((thisPlayer.id + 1) % len(players)) + 1
-	fmt.Println(strconv.Itoa(thisPlayer.id), "-", strconv.Itoa(assigned))
-	for {
-		time.Sleep(90 * time.Millisecond)
-
-		if players[assigned].hasPuck {
-			players[assigned].hasPuck = false
-			thisPlayer.hasPuck = true
-			fmt.Println(strconv.Itoa(assigned), " passed to ", strconv.Itoa(thisPlayer.id))
-		}
-	}
+func init() {
+	team = hockey.NewTeam()
 }
 
 func main() {
-	players[1] = &player{id: 1, hasPuck: true}
-	players[2] = &player{id: 2}
-	players[3] = &player{id: 3}
+	team.Players[1] = hockey.NewPlayer(team, 1, true)
+	team.Players[2] = hockey.NewPlayer(team, 2, false)
+	team.Players[3] = hockey.NewPlayer(team, 3, false)
 
-	go players[1].play()
+	fmt.Println("The game is about to begin.")
+	fmt.Println("Number of Players: ", len(team.Players))
+
+	time.Sleep(2 * time.Second)
+
+	go team.Players[1].Play()
 	time.Sleep(30 * time.Millisecond)
-	go players[2].play()
+	go team.Players[2].Play()
 	time.Sleep(30 * time.Millisecond)
-	go players[3].play()
+	go team.Players[3].Play()
 
 	time.Sleep(5 * time.Second)
+	fmt.Println("Game Over")
 }
