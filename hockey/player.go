@@ -1,39 +1,29 @@
 package hockey
 
 import (
-	"fmt"
 	"strconv"
-	"time"
+
+	"github.com/fatih/color"
 )
 
+//Player -
 type Player struct {
-	ID      int
-	HasPuck bool
-	Team    *Team
+	ID        int
+	Number    string
+	HasPuck   bool
+	Team      *Team
+	Colorizer *color.Color
 }
 
-func NewPlayer(team *Team, id int, hasPuck bool) *Player {
+//NewPlayer -
+func NewPlayer(team *Team, id int, hasPuck bool, textColor color.Attribute) *Player {
 	newPlayer := &Player{
-		Team:    team,
-		ID:      id,
-		HasPuck: hasPuck,
+		Team:      team,
+		ID:        id,
+		Number:    strconv.Itoa(id),
+		HasPuck:   hasPuck,
+		Colorizer: color.New(textColor),
 	}
 
 	return newPlayer
-}
-
-func (thisPlayer *Player) Play() {
-	teamSize := len(thisPlayer.Team.Players)
-	assigned := ((thisPlayer.ID + 1) % teamSize) + 1
-	fmt.Println(strconv.Itoa(thisPlayer.ID), "-", strconv.Itoa(assigned))
-	for {
-		time.Sleep(1 * time.Nanosecond)
-
-		teammates := thisPlayer.Team.Players
-		if teammates[assigned].HasPuck {
-			teammates[assigned].HasPuck = false
-			thisPlayer.HasPuck = true
-			fmt.Println(strconv.Itoa(assigned), " passed to ", strconv.Itoa(thisPlayer.ID))
-		}
-	}
 }
