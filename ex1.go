@@ -15,10 +15,6 @@ var (
 	startupInterval = 0 * time.Millisecond
 )
 
-func init() {
-	team = hockey.NewTeam()
-}
-
 func main() {
 	//slowDown()
 	//slowWaaaayDown()
@@ -30,7 +26,7 @@ func main() {
 	fmt.Println("The game is about to begin.")
 	fmt.Println("Number of Players: ", len(team.Players))
 
-	time.Sleep(2 * time.Second)
+	time.Sleep(1 * time.Second)
 
 	go team.Players[1].Ex1PassItAround(sleepInterval)
 	time.Sleep(startupInterval)

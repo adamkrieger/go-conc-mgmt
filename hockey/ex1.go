@@ -13,12 +13,12 @@ func (thisPlayer *Player) Ex1PassItAround(sleepInterval time.Duration) {
 	teamSize := len(thisPlayer.Team.Players)
 	assigned := ((thisPlayer.ID + 1) % teamSize) + 1
 	fmt.Println(strconv.Itoa(thisPlayer.ID), "-", strconv.Itoa(assigned))
+
+	teammates := thisPlayer.Team.Players
+	passer := teammates[assigned]
+
 	for {
 		time.Sleep(sleepInterval)
-
-		teammates := thisPlayer.Team.Players
-
-		passer := teammates[assigned]
 
 		if passer.HasPuck {
 			passer.HasPuck = false

@@ -5,13 +5,12 @@ import (
 	"time"
 
 	"github.com/adamkrieger/go-conc-mgmt/hockey"
+	"github.com/adamkrieger/go-conc-mgmt/state"
 	"github.com/fatih/color"
 )
 
 var (
-	team            *hockey.Team
-	sleepInterval   = 90 * time.Millisecond
-	startupInterval = 30 * time.Millisecond
+	team *hockey.Team
 )
 
 func init() {
@@ -26,14 +25,12 @@ func main() {
 	fmt.Println("The game is about to begin.")
 	fmt.Println("Number of Players: ", len(team.Players))
 
-	time.Sleep(2 * time.Second)
+	time.Sleep(1 * time.Second)
 
-	go team.Players[1].Ex1PassItAround(sleepInterval)
-	time.Sleep(startupInterval)
-	go team.Players[2].Ex1PassItAround(sleepInterval)
-	time.Sleep(startupInterval)
-	go team.Players[3].Ex1PassItAround(sleepInterval)
+	go team.Players[1].Ex2PassItAround()
+	go team.Players[2].Ex2PassItAround()
+	go team.Players[3].Ex2PassItAround()
 
 	time.Sleep(3 * time.Second)
-	fmt.Println("Game Over")
+	fmt.Println("Game Over. ", state.Passes, " passes completed.")
 }
