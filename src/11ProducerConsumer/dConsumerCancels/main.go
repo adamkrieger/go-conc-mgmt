@@ -16,13 +16,17 @@ func main() {
 }
 
 func produceMsgs(msgChan chan<- string, cancelChan <-chan interface{}) {
-	????
 	for 1 == 1 {
-		msgChan <- time.Now().String()
-		time.Sleep(1 * time.Second)
+		select {
+		case <-time.After(1 * time.Second):
+			msgChan <- time.Now().String()
+		case _, chanOK := <-cancelChan:
+			if !chanOK {
+				close(msgChan)
+				return
+			}
+		}
 	}
-
-	close(msgChan)
 }
 
 func receiveMsgs(msgChan <-chan string, cancelChan chan<- interface{}) {
@@ -34,9 +38,9 @@ func receiveMsgs(msgChan <-chan string, cancelChan chan<- interface{}) {
 
 		if !chanOk {
 			return
-		} else {
-			fmt.Println(msg)
 		}
+
+		fmt.Println(msg)
 
 		//Cancel after 10 msgs
 		if !canceled && msgs >= 10 {
