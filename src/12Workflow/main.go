@@ -2,6 +2,10 @@ package main
 
 import (
 	"encoding/json"
+	"log"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 )
 
@@ -36,26 +40,42 @@ type invoiceItem struct {
 }
 
 func main() {
-	parsingChan := make(chan string)
-	inventoryReservationChan := make(chan *orderRequest)
-	paymentRoutingChan := make(chan *invoice)
-	creditCheckChan := make(chan *invoice)
-	paymentProcessingChan := make(chan *invoice)
-	completionChan := make(chan *invoice)
-	alertChan := make(chan *invoice)
+	//Integrate with surrounding operating system
+	sigs := make(chan os.Signal, 1)
+	done := make(chan bool, 1)
 
-	go parsing(parsingChan, inventoryReservationChan)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+
+	go func() {
+		_ = <-sigs
+		//initiate any cleanup here
+		done <- true
+	}()
+
+	//Set up workflow channels (queues)
+	inventoryReservationChan := make(chan *orderRequest, 50)
+	paymentRoutingChan := make(chan *invoice, 50)
+	creditCheckChan := make(chan *invoice, 10)
+	paymentProcessingChan := make(chan *invoice, 100)
+	completionChan := make(chan *invoice, 200)
+	alertChan := make(chan *invoice, 25)
+
+	//Launch go routines to do work
+	go parsing(inventoryReservationChan)
 	go reservingInventory(inventoryReservationChan, paymentRoutingChan)
 	go paymentRouting(paymentRoutingChan, creditCheckChan, paymentProcessingChan)
 	go checkingCredit(creditCheckChan, completionChan)
 	go processingPayment(paymentProcessingChan, completionChan)
 	go markingCompleted(completionChan, alertChan)
 	go alerting(alertChan)
+
+	<-done
 }
 
-func parsing(parsingChan <-chan string, inventoryReservationChan chan<- *orderRequest) {
+func parsing(inventoryReservationChan chan<- *orderRequest) {
 	for {
-		req := <-parsingChan
+		//read next input from source
+		req := ""
 
 		var order *orderRequest
 
@@ -105,7 +125,30 @@ func checkingCredit(creditCheckChan <-chan *invoice, completionChan chan<- *invo
 	}
 }
 
-func processingPayment(pmtProcChan <-chan *invoice, completionChan chan<- *invoice) {}
+func processingPayment(pmtProcChan <-chan *invoice, completionChan chan<- *invoice) {
+	for {
+		processableInvoice := <-pmtProcChan
 
-func markingCompleted(completionChan <-chan *invoice, alertsChan chan<- *invoice) {}
-func alerting(alertsChan <-chan *invoice)                                         {}
+		//do payment processing
+
+		completionChan <- processableInvoice
+	}
+}
+
+func markingCompleted(completionChan <-chan *invoice, alertsChan chan<- *invoice) {
+	for {
+		completableInvoice := <-completionChan
+
+		//do final completions
+
+		alertsChan <- completableInvoice
+	}
+}
+func alerting(alertsChan <-chan *invoice) {
+	for {
+		completedInvoice := <-alertsChan
+
+		//Perform necessary alerting
+		log.Println(completedInvoice.customerID)
+	}
+}

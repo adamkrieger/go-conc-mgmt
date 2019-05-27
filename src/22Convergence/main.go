@@ -26,12 +26,18 @@ func main() {
 		go doWork(k, task)
 	}
 
-	for _ = range tasks {
+	for range tasks {
 		result := <-retChan
 		fmt.Println("Task: ", result.correlation, " - ", result.success)
 	}
 }
 
 func doWork(correlationID int, taskData *taskData) {
+	//do work against taskData.input
 
+	taskData.resultChan <- &result{
+		correlation: correlationID,
+		success:     true,
+		err:         nil,
+	}
 }

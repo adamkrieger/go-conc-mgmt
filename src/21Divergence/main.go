@@ -13,11 +13,15 @@ type result struct {
 func main() {
 	resultChan := make(chan *result)
 
+	//Async
 	go doWorkAsync(resultChan)
+	//Sync
 	result := doWork()
 
+	//Wait for Async to catch up
 	resultAsync := <-resultChan
 
+	//Merge results
 	fmt.Println(result.success && resultAsync.success)
 }
 
