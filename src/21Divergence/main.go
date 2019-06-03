@@ -20,7 +20,6 @@ func main() {
 
 	//Wait for Async to catch up
 	resultAsync := <-resultChan
-
 	//Merge results
 	fmt.Println(result.success && resultAsync.success)
 }
