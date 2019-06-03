@@ -73,7 +73,7 @@ func (proc *processor) run(failureChan chan<- string) {
 	for {
 		src := rand.NewSource(time.Now().UnixNano())
 		rnd := rand.New(src).Float32() * 100
-		//fmt.Println(rnd)
+		
 		if rnd > 98 {
 			fmt.Println(proc.key, "panicking")
 			panic("at the disco")

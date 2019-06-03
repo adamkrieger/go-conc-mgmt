@@ -22,6 +22,14 @@ func (wi *workerImpl) Description() string {
 
 func main() {
 
+	// arrOf := []string{"one", "two", "three"}
+
+	// mapOf := map[string]int{
+	// 	"one":   1,
+	// 	"two":   2,
+	// 	"three": 3,
+	// }
+
 	//workerImpls
 	wi1 := workerImpl{description: "1"}
 	wi2 := workerImpl{description: "2"}
