@@ -53,12 +53,12 @@ func main() {
 	}()
 
 	//Set up workflow channels (queues)
-	inventoryReservationChan := make(chan *orderRequest, 50)
-	paymentRoutingChan := make(chan *invoice, 50)
-	creditCheckChan := make(chan *invoice, 10)
-	paymentProcessingChan := make(chan *invoice, 100)
-	completionChan := make(chan *invoice, 200)
-	alertChan := make(chan *invoice, 25)
+	inventoryReservationChan := make(chan *orderRequest)
+	paymentRoutingChan := make(chan *invoice)
+	creditCheckChan := make(chan *invoice)
+	paymentProcessingChan := make(chan *invoice)
+	completionChan := make(chan *invoice)
+	alertChan := make(chan *invoice)
 
 	//Launch go routines to do work
 	go parsing(inventoryReservationChan)
